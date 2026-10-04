@@ -106,6 +106,11 @@ form.addEventListener('submit', async (event) => {
   try {
     const response = await fetch('/predict', { method: 'POST', body: data });
     const result = await response.json();
+    if (result.code === 'not_gold_packet') {
+      resultsSection.hidden = true;
+      setStatus(result.message, 'error');
+      return;
+    }
     if (!response.ok || !result.success) throw new Error(result.message || 'Detection failed.');
 
     originalImage.src = result.original_url;

@@ -60,4 +60,15 @@ count = len(results[0].boxes)
 ```
 
 OpenCV draws the bounding boxes and saves the annotated image under `static/results/`. No Roboflow API or cloud service is used.
+
+Before counting, the application runs an image gate at confidence `0.55`. If the model
+does not find strong packet evidence, the request is rejected with a message asking for
+an image containing gold packets. Images that pass the gate are counted using the normal
+detection confidence of `0.32`.
+
+This gate reduces false counts from unrelated images, but it is not a replacement for a
+dedicated image classifier. For production accuracy, add negative training images
+(books, people, empty scenes, and other common uploads) and train a separate
+`gold_packet`/`not_gold_packet` classifier or a two-class detector. That classifier should
+be used as the gateway before this packet detector.
 # python -c "from pathlib import Path; p=Path(r'F:\mini-project\Gold Packet Counter.v3-gold-packet-dataset-final.yolov11\test\labels\PHOTO-2026-09-26-16-20-15-2_jpg.rf.1ba9017dbd9df12a50f27242fb7edfb4.txt'); print('Ground-truth annotations:', len(p.read_text().splitlines()))"  
