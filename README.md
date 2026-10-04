@@ -61,7 +61,7 @@ count = len(results[0].boxes)
 
 OpenCV draws the bounding boxes and saves the annotated image under `static/results/`. No Roboflow API or cloud service is used.
 
-Before counting, the application runs an image gate at confidence `0.55`. At least three
+Before counting, the application runs an image gate at confidence `0.45`. At least three
 strong packet detections are required. If the model does not find that evidence, the
 request is rejected with a message asking for an image containing at least three visible
 gold packets. Images that pass the gate are counted using the normal detection confidence
