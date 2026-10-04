@@ -17,6 +17,7 @@ MODEL_PATH = BASE_DIR / "model" / "best.pt"
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png"}
 UPLOAD_RETENTION_DAYS = 7
 GATE_CONFIDENCE = 0.55
+GATE_MIN_DETECTIONS = 3
 DETECTION_CONFIDENCE = 0.32
 
 UPLOAD_FOLDER.mkdir(exist_ok=True)
@@ -71,7 +72,7 @@ def make_result_image(image_path, result, output_path):
 
 
 def passes_image_gate(image_path):
-    """Return true only when the detector finds strong packet evidence."""
+    """Return true only when the detector finds at least three strong packets."""
     gate_results = get_model().predict(
         source=str(image_path),
         conf=GATE_CONFIDENCE,
@@ -81,7 +82,7 @@ def passes_image_gate(image_path):
         save=False,
         verbose=False,
     )
-    return bool(gate_results and len(gate_results[0].boxes))
+    return bool(gate_results and len(gate_results[0].boxes) >= GATE_MIN_DETECTIONS)
 
 
 @app.route("/")
@@ -115,7 +116,7 @@ def predict():
             return jsonify(
                 success=False,
                 code="not_gold_packet",
-                message="No gold packet image detected. Please upload a clear image containing gold packets.",
+                message="No gold packet image detected. Please upload a clear image containing at least three visible gold packets.",
             ), 422
 
         detection_results = get_model().predict(
