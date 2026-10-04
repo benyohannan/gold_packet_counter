@@ -18,8 +18,6 @@ ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png"}
 UPLOAD_RETENTION_DAYS = 7
 GATE_CONFIDENCE = 0.45
 GATE_MIN_DETECTIONS = 3
-FALLBACK_GATE_CONFIDENCE = 0.35
-FALLBACK_GATE_MIN_DETECTIONS = 2
 DETECTION_CONFIDENCE = 0.32
 
 UPLOAD_FOLDER.mkdir(exist_ok=True)
@@ -74,7 +72,7 @@ def make_result_image(image_path, result, output_path):
 
 
 def passes_image_gate(image_path):
-    """Accept clear images or difficult views with two moderate detections."""
+    """Return true only when the detector finds at least three strong packets."""
     gate_results = get_model().predict(
         source=str(image_path),
         conf=GATE_CONFIDENCE,
@@ -84,22 +82,7 @@ def passes_image_gate(image_path):
         save=False,
         verbose=False,
     )
-    if gate_results and len(gate_results[0].boxes) >= GATE_MIN_DETECTIONS:
-        return True
-
-    fallback_results = get_model().predict(
-        source=str(image_path),
-        conf=FALLBACK_GATE_CONFIDENCE,
-        iou=0.7,
-        imgsz=832,
-        max_det=20,
-        save=False,
-        verbose=False,
-    )
-    return bool(
-        fallback_results
-        and len(fallback_results[0].boxes) >= FALLBACK_GATE_MIN_DETECTIONS
-    )
+    return bool(gate_results and len(gate_results[0].boxes) >= GATE_MIN_DETECTIONS)
 
 
 @app.route("/")
@@ -133,7 +116,7 @@ def predict():
             return jsonify(
                 success=False,
                 code="not_gold_packet",
-                message="No gold packet image detected. Please upload a clear image containing visible gold packets.",
+                message="No gold packet image detected. Please upload a clear image containing at least three visible gold packets.",
             ), 422
 
         detection_results = get_model().predict(
