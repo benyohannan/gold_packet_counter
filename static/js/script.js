@@ -98,6 +98,7 @@ form.addEventListener('submit', async (event) => {
 
   const data = new FormData();
   data.append('image', selectedFile);
+  resultsSection.hidden = true;
   detectButton.disabled = true;
   resetButton.disabled = true;
   detectButton.querySelector('span').textContent = 'Detecting...';
