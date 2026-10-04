@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Offline YOLOv11 gold packet detection and counting system.">
+  <title>Automatic Gold Packet Counter | MITS</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="{{ url_for('home') }}" aria-label="Automatic Gold Packet Counter home">
+        <span class="brand-mark" aria-hidden="true"><span>GP</span></span>
+        <span>Automatic Gold Packet Counter</span>
+      </a>
+      <nav class="header-nav" aria-label="Main navigation">
+        <a class="nav-link active" href="{{ url_for('home') }}"><span class="nav-icon home-icon" aria-hidden="true">⌂</span>Home</a>
+        <a class="nav-link" href="#upload-heading"><span class="nav-icon detect-icon" aria-hidden="true">◉</span>Detect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="intro" aria-labelledby="page-title">
+      <div class="intro-copy">
+        <p class="kicker">Computer vision, made practical</p>
+        <h1 id="page-title">Automatic Gold<br><em>Packet Counter</em></h1>
+        <p class="subtitle">YOLOv11-based Gold Packet Detection System</p>
+        <p class="description">Upload one image of gold packets and let your locally trained model locate and count every packet in the frame.</p>
+      </div>
+      <div class="hero-carousel" id="heroCarousel" aria-label="Detection workflow carousel" tabindex="0">
+        <div class="carousel-track">
+          <article class="carousel-slide is-active">
+            <div class="slide-topline"><span>01 / SCAN</span><span class="slide-status">READY</span></div>
+            <div class="scan-visual"><span class="scan-corner corner-tl"></span><span class="scan-corner corner-tr"></span><span class="scan-corner corner-bl"></span><span class="scan-corner corner-br"></span><span class="scan-line"></span><span class="scan-packet packet-one"></span><span class="scan-packet packet-two"></span><span class="scan-packet packet-three"></span></div>
+            <h3>Frame the packets</h3>
+            <p>One image is all the model needs to begin.</p>
+          </article>
+          <article class="carousel-slide">
+            <div class="slide-topline"><span>02 / LOCATE</span><span class="slide-status">ANALYZE</span></div>
+            <div class="locate-visual"><span class="locate-ring"></span><span class="locate-crosshair">+</span><span class="locate-label label-a">PACKET 01</span><span class="locate-label label-b">PACKET 02</span></div>
+            <h3>Find every packet</h3>
+            <p>YOLOv11 maps each visible packet precisely.</p>
+          </article>
+          <article class="carousel-slide">
+            <div class="slide-topline"><span>03 / COUNT</span><span class="slide-status success-text">COMPLETE</span></div>
+            <div class="count-visual"><span class="count-visual-number">28</span><span class="count-visual-unit">packets detected</span><span class="count-visual-bar"><i></i></span></div>
+            <h3>See the final count</h3>
+            <p>Clear results, ready for your next decision.</p>
+          </article>
+        </div>
+        <div class="carousel-controls" aria-hidden="true"><span class="carousel-dot is-active"></span><span class="carousel-dot"></span><span class="carousel-dot"></span><span class="carousel-progress"></span></div>
+      </div>
+    </section>
+
+    <section class="workspace" aria-labelledby="upload-heading">
+      <div class="section-topline">
+        <div>
+          <p class="section-number">01 / INPUT</p>
+          <h2 id="upload-heading">Upload an image</h2>
+        </div>
+        <p class="file-hint">JPG, JPEG or PNG<br>Maximum 10 MB</p>
+      </div>
+
+      <form id="predictionForm" novalidate>
+        <label class="drop-zone" id="dropZone" for="imageInput">
+          <input id="imageInput" name="image" type="file" accept="image/jpeg,image/png" hidden>
+          <span class="upload-symbol" aria-hidden="true">+</span>
+          <span class="drop-title">Drop your image here</span>
+          <span class="drop-subtitle">or <strong>browse from your device</strong></span>
+        </label>
+
+        <div class="preview-wrap" id="previewWrap" hidden>
+          <img id="previewImage" alt="Preview of selected gold packet image">
+          <div class="preview-meta">
+            <span class="preview-label">Selected image</span>
+            <strong id="fileName">-</strong>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="button button-primary" id="detectButton" type="submit" disabled>
+            <span>Detect packets</span><span class="button-arrow" aria-hidden="true">&#8594;</span>
+          </button>
+          <button class="button button-quiet" id="resetButton" type="button" disabled>Clear</button>
+        </div>
+      </form>
+      <p class="status" id="statusMessage" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="results" id="resultsSection" hidden aria-labelledby="results-heading">
+      <div class="section-topline">
+        <div>
+          <p class="section-number">02 / RESULT</p>
+          <h2 id="results-heading">Detection complete</h2>
+        </div>
+        <span class="success-label">&#10003; Model response received</span>
+      </div>
+      <div class="result-grid">
+        <figure class="image-panel">
+          <figcaption>Original image</figcaption>
+          <div class="image-frame"><img id="originalImage" alt="Original uploaded image"></div>
+        </figure>
+        <figure class="image-panel detected-panel">
+          <figcaption><span>Packets identified</span><span class="detected-tag">YOLOv11 output</span></figcaption>
+          <div class="image-frame"><img id="detectedImage" alt="Detected gold packets with bounding boxes"></div>
+        </figure>
+        <div class="count-card">
+          <span class="packet-icon" aria-hidden="true">▦</span>
+          <span class="count-label">Total gold packets<br>detected</span>
+          <strong id="packetCount">0</strong>
+          <span class="count-unit">packets</span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <span>Automatic Gold Packet Counter</span>
+      <span>Flask &middot; Ultralytics YOLOv11 Nano &middot; OpenCV</span>
+    </footer>
+  </main>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
